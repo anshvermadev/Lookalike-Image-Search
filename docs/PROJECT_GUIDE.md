@@ -202,24 +202,28 @@ $$
 The result set consists of the K gallery vectors with the greatest scores:
 
 $$
-\operatorname{Results}(q)=\operatorname{TopK}_{i\in\{1,\ldots,N\}}\;s(q,x_i)
+\mathrm{Results}(q)=\mathrm{TopK}_{i\in\{1,\ldots,N\}}\;s(q,x_i)
 $$
+
+Plain-text equivalent: `Results(q) = the K gallery images with the highest cosine scores.`
 
 **Worked example using two-dimensional unit vectors:**
 
 | Vector | Coordinates | Similarity to q = [0.6,0.8] | Rank |
 |---|---|---:|---:|
-| A | [0.6,0.8] | 0.6*0.6 + 0.8*0.8 = 1.00 | 1 |
-| B | [1,0] | 0.6*1 + 0.8*0 = 0.60 | 2 |
-| C | [0,-1] | 0.6*0 + 0.8*(-1) = -0.80 | 3 |
+| A | [0.6,0.8] | `0.6*0.6 + 0.8*0.8 = 1.00` | 1 |
+| B | [1,0] | `0.6*1 + 0.8*0 = 0.60` | 2 |
+| C | [0,-1] | `0.6*0 + 0.8*(-1) = -0.80` | 3 |
 
 A higher value means closer vector direction. Cosine lies in [-1,1]; nonnegative histogram vectors produce nonnegative cosine values. Scores from CLIP and HSV are not calibrated to each other, even though both use cosine.
 
 The interface displays:
 
 $$
-\operatorname{displayPercent}=100\,s(q,x_i)
+\mathrm{displayPercent}=100\,s(q,x_i)
 $$
+
+Plain-text equivalent: `displayPercent = 100 * cosine_similarity`
 
 It rounds to one decimal place. A score of 0.849 becomes 84.9%, not a probability of correctness. The bar displays only the positive portion, bounded to 0-100; a negative score remains negative in the number. Preview dialogs also show raw cosine, and result CSV files export the raw score.
 
@@ -301,16 +305,20 @@ Precision answers: what fraction of the retrieved results are relevant? The proj
 ### Recall@10
 
 $$
-\operatorname{Recall}@10=\frac{\sum_{i=1}^{10}r_i}{R}
+\mathrm{Recall}@10=\frac{\sum_{i=1}^{10}r_i}{R}
 $$
+
+Plain-text equivalent: `Recall@10 = relevant results in the top 10 / total relevant gallery images`
 
 Recall answers: what fraction of all relevant gallery images were retrieved? R=40 here, so even 10 relevant results yield only 10/40=0.25 recall. This ceiling is a consequence of the cutoff, not an implementation error.
 
 ### F1@10
 
 $$
-F1@10=\frac{2(P@10)(\operatorname{Recall}@10)}{P@10+\operatorname{Recall}@10}
+F1@10=\frac{2(P@10)(\mathrm{Recall}@10)}{P@10+\mathrm{Recall}@10}
 $$
+
+Plain-text equivalent: `F1@10 = 2 * Precision@10 * Recall@10 / (Precision@10 + Recall@10)`
 
 It is zero if both inputs are zero. The script calculates F1 per query and averages those values; it does not generally define the reported value as F1 computed from the two aggregate means.
 
@@ -380,7 +388,7 @@ With R=40:
 | P@5 | 2/5 | 0.4000 |
 | P@10 | 2/10 | 0.2000 |
 | Recall@10 | 2/40 | 0.0500 |
-| F1@10 | 2*0.2*0.05/(0.2+0.05) | 0.0800 |
+| F1@10 | `2*0.2*0.05/(0.2+0.05)` | 0.0800 |
 | AP@10 | (1/1 + 2/3)/10 | 0.1667 |
 | RR@10 | 1/1 | 1.0000 |
 | DCG@10 | 1/log2(2) + 1/log2(4) | 1.5000 |
