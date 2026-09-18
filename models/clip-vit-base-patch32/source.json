@@ -1,0 +1,9 @@
+{
+  "repo": "Xenova/clip-vit-base-patch32",
+  "revision": "d15189d7028b43f1d3e65039190477f6af591c2a",
+  "file": "onnx/vision_model_quantized.onnx",
+  "sha256": "583fd1110a514667812fee7d684952aaf82a99b959760c8d7dca7e0ab9839299",
+  "bytes": 89117001,
+  "runtime": "ONNX Runtime CPU",
+  "description": "Pretrained CLIP ViT-B/32 vision encoder, INT8 quantization; no project fine-tuning."
+}

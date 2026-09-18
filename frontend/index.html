@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Search by sight. Explore similar images with pretrained CLIP, right on your computer.">
+  <title>Lookalike - See beyond the pixels.</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script defer src="/assets/app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#workspace">Skip to image search</a>
+<header class="site-header">
+  <a href="#" class="brand" aria-label="Lookalike home"><span class="brand-mark" aria-hidden="true"></span>Lookalike<span class="brand-dot">.</span></a>
+  <nav aria-label="Main navigation"><a class="quiet-link" href="#how-it-works">How it works</a><a class="button button-small" href="#workspace">Start exploring <span aria-hidden="true">↗</span></a></nav>
+</header>
+<main>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="aurora" aria-hidden="true"></div><span class="cross cross-left" aria-hidden="true">+</span><span class="cross cross-right" aria-hidden="true">+</span>
+    <div class="hero-copy"><span class="eyebrow"><i></i> A NEW WAY TO LOOK</span>
+      <h1 id="hero-title">See beyond<br>the <span class="soft-word">pixels.</span></h1>
+      <p>Some things just look alike.<br>Find the connection, one image at a time.</p>
+      <a class="button hero-cta" href="#workspace">Find your lookalike <span aria-hidden="true">↗</span></a>
+      <span class="micro-copy">No account. No cloud. Just your curiosity.</span>
+    </div>
+    <div class="image-ribbon" id="hero-images" aria-label="A glimpse of the image collection">
+      <div class="ribbon-placeholder"></div><div class="ribbon-placeholder"></div><div class="ribbon-placeholder"></div><div class="ribbon-placeholder"></div>
+    </div>
+    <div class="ribbon-caption"><span class="tiny-line"></span> DIFFERENT IMAGES. SHARED POSSIBILITIES. <span class="tiny-line"></span></div>
+  </section>
+  <div class="collection-strip"><span>SMALL COLLECTION. <b>BIG CONNECTIONS.</b></span><div><span><b id="gallery-count">400</b> images to explore</span><i></i><span><b id="category-count">10</b> categories</span><i></i><span><span class="status-dot"></span> Runs locally</span></div></div>
+  <section id="workspace" class="workspace section-wrap" aria-labelledby="workspace-title">
+    <div class="section-heading"><div><span class="eyebrow">01 / THE WORKSPACE</span><h2 id="workspace-title">Start with what you see.</h2><p>A photo is all you need. We’ll find its closest matches.</p></div><span class="collection-tag"><span class="status-dot"></span> Caltech-101 mini</span></div>
+    <div class="workspace-nav" role="tablist" aria-label="Workspace views">
+      <button id="tab-search" class="tab active" role="tab" aria-selected="true" aria-controls="panel-search" data-tab="search">Visual search</button>
+      <button id="tab-compare" class="tab" role="tab" aria-selected="false" aria-controls="panel-compare" data-tab="compare" tabindex="-1">Compare methods</button>
+      <button id="tab-evaluation" class="tab" role="tab" aria-selected="false" aria-controls="panel-evaluation" data-tab="evaluation" tabindex="-1">Evaluation</button>
+      <button id="tab-collection" class="tab" role="tab" aria-selected="false" aria-controls="panel-collection" data-tab="collection" tabindex="-1">Collection</button>
+    </div>
+    <div id="app-error" class="alert error" role="alert" hidden></div>
+    <div id="search-workspace" class="search-layout">
+      <aside class="query-card" aria-label="Choose query image">
+        <div class="card-heading"><h3>Your starting point</h3><span class="small-index">01</span></div>
+        <div class="segmented source-switch" aria-label="Query source"><button class="selected" data-source="example" aria-pressed="true">Try an example</button><button data-source="upload" aria-pressed="false">Upload a photo</button></div>
+        <div id="example-controls"><label for="example-category">Choose a category</label><select id="example-category" disabled><option>Loading collection…</option></select></div>
+        <div id="upload-controls" hidden><input id="file-input" type="file" accept="image/jpeg,image/png,image/webp" hidden><button id="drop-zone" class="drop-zone" type="button"><span class="upload-symbol" aria-hidden="true">↥</span><strong>Drop a little inspiration.</strong><span>or click to choose a photo</span><small>JPG, PNG, WebP · up to 10 MB</small></button></div>
+        <div id="query-preview" class="query-preview"><span class="loading-label">Getting your examples ready…</span></div>
+        <div class="preview-meta"><span id="query-name">Your query image</span><button id="next-example" class="text-button" type="button">Next example ↗</button><button id="change-upload" class="text-button" type="button" hidden>Change photo</button></div>
+        <div class="query-options"><div id="method-control"><label for="search-method">Search with</label><select id="search-method"><option value="clip">CLIP · visual meaning</option><option value="histogram">Histogram · color</option></select></div><div><label for="result-count">Results</label><select id="result-count"><option value="5">Top 5</option><option value="10" selected>Top 10</option><option value="20">Top 20</option></select></div></div>
+        <button id="search-button" class="button search-button" type="button" disabled><span>Find similar images</span><span aria-hidden="true">↗</span></button>
+        <p class="local-note"><span aria-hidden="true">◈</span> Your photo stays on this computer.</p>
+      </aside>
+      <div class="results-area">
+        <section id="panel-search" role="tabpanel" aria-labelledby="tab-search">
+          <div class="results-heading"><div><span class="eyebrow">THE DISCOVERY</span><h3 id="results-title">A little resemblance awaits.</h3></div><button id="export-results" class="icon-button" title="Download results as CSV" aria-label="Download results as CSV" hidden>↓</button></div>
+          <div id="search-status" class="result-status" aria-live="polite"></div>
+          <div id="search-empty" class="empty-state"><div class="empty-art" aria-hidden="true"><span></span><span></span><span></span></div><h4>One image opens up a collection.</h4><p>Pick an example or upload your own.<br>Your closest visual matches will appear here.</p><span class="empty-hint">← START WITH AN IMAGE</span></div>
+          <div id="search-results" class="results-grid"></div>
+          <div id="feedback-bar" class="feedback-bar" hidden><div><strong id="selection-count">0 images selected</strong><span>Choose useful matches to refine your search.</span></div><div><button id="reset-feedback" class="text-button" hidden>Reset</button><button id="refine-button" class="button button-small" disabled>Refine search ↗</button></div></div>
+          <p id="score-note" class="fine-print" hidden>Best matches first. Percentage = cosine similarity × 100, not confidence or accuracy. Negative scores indicate opposing vectors; the bar shows positive similarity only. Select a card’s + to refine the ranking.</p>
+        </section>
+        <section id="panel-compare" role="tabpanel" aria-labelledby="tab-compare" hidden><div class="results-heading"><div><span class="eyebrow">TWO WAYS OF SEEING</span><h3>Same image. Different perspectives.</h3></div></div><p class="muted compare-intro">Color distribution on one side. Visual meaning on the other.</p><div id="compare-status" aria-live="polite" class="result-status"></div><div id="compare-results" class="compare-grid"><div class="empty-state compact"><h4>Let the methods speak.</h4><p>Choose an image and compare both searches.</p></div></div></section>
+      </div>
+    </div>
+    <section id="panel-evaluation" role="tabpanel" aria-labelledby="tab-evaluation" hidden><div class="panel-heading"><div><span class="eyebrow">LESS GUESSWORK. MORE EVIDENCE.</span><h3>How well does it see?</h3><p class="muted">100 held-out queries. The same 400-image gallery. Real measurements.</p></div><button id="run-evaluation" class="button button-small">Run evaluation ↗</button></div><div id="evaluation-status" role="status" class="result-status"></div><div id="evaluation-content"></div></section>
+    <section id="panel-collection" role="tabpanel" aria-labelledby="tab-collection" hidden><div class="panel-heading"><div><span class="eyebrow">THE SOURCE OF EVERY MATCH</span><h3>Meet your collection.</h3><p class="muted">Every result comes from here. Explore the gallery and its held-out queries.</p></div><select id="collection-split" aria-label="Image split"><option value="gallery">Search gallery · 400</option><option value="queries">Held-out queries · 100</option></select></div><div id="category-filters" class="category-filters" aria-label="Filter collection"></div><div id="collection-status" class="result-status" aria-live="polite"></div><div id="collection-images" class="collection-grid"></div><div class="pagination"><button id="previous-page" class="outline-button">← Previous</button><span id="page-label"></span><button id="next-page" class="outline-button">Next →</button></div><details class="methodology"><summary>Index management <span>+</span></summary><p>Saved indexes contain only gallery images. Rebuilding an index makes previous evaluation measurements out of date.</p><div class="index-actions"><button class="outline-button" data-build="clip">Rebuild CLIP index</button><button class="outline-button" data-build="histogram">Rebuild color index</button></div><p id="build-status" role="status"></p></details></section>
+  </section>
+  <section id="how-it-works" class="how-section"><div class="section-wrap"><div class="section-heading"><div><span class="eyebrow">02 / BEHIND THE RESEMBLANCE</span><h2>A little science.<br>A lot of seeing.</h2></div><p>From pixels to possibilities.<br>Three steps, all on your computer.</p></div><div class="steps"><article><span class="step-number">01</span><h3>Bring an image.</h3><p>Upload a photo or choose an example from the collection. No tags or keywords needed.</p></article><article><span class="step-number">02</span><h3>Find its signature.</h3><p>Pretrained CLIP turns your image into a vector that captures visual meaning. No training from scratch.</p></article><article><span class="step-number">03</span><h3>See the connections.</h3><p>FAISS compares that vector with the gallery and ranks its closest matches. Your feedback can refine them.</p></article></div><div class="scope-note"><span aria-hidden="true">✳</span><p>A small, thoughtful experiment in image retrieval. Matches are limited to the collection’s ten categories; similarity scores aren’t probabilities.</p><a href="#workspace">Try it yourself ↗</a></div></div></section>
+</main>
+<footer class="site-footer section-wrap"><div><a href="#" class="brand"><span class="brand-mark" aria-hidden="true"></span>Lookalike<span class="brand-dot">.</span></a><p>Find the familiar in something new.</p></div><div class="footer-meta"><span>INFORMATION STORAGE & RETRIEVAL</span><span>Caltech-101 · Pretrained CLIP · FAISS</span><a href="https://www.kaggle.com/datasets/imbikramsaha/caltech-101" target="_blank" rel="noreferrer">Dataset source ↗</a></div></footer>
+<dialog id="image-dialog" aria-labelledby="dialog-title"><button id="close-dialog" class="dialog-close" aria-label="Close image preview">×</button><img id="dialog-image" alt=""><div class="dialog-info"><div><span class="eyebrow">A CLOSER LOOK</span><h3 id="dialog-title"></h3></div><span id="dialog-score"></span></div></dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>

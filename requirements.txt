@@ -1,0 +1,9 @@
+numpy>=2.2,<3
+Pillow>=11.1,<13
+faiss-cpu>=1.10,<2
+onnxruntime>=1.21,<2
+pandas>=2.2,<3
+pytest>=8.3,<10
+starlette>=0.47,<2
+uvicorn>=0.35,<1
+python-multipart>=0.0.20,<1

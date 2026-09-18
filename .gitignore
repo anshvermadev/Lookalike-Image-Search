@@ -1,0 +1,50 @@
+# Local data and reproducible runtime assets
+/data/
+/indexes/
+/artifacts/
+
+# Keep model weights, but exclude temporary download chunks
+/models/**/parts-*/
+/models/**/*.part
+
+# Python environments and builds
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Tests, caches, and logs
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+pytest-cache-files-*/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.log
+*.tmp
+
+# Local credentials (keep example configuration shareable)
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+kaggle.json
+*.pem
+*.key
+
+# Editor, assistant, and OS files
+.vscode/
+.idea/
+.rocketride/
+.codex/
+.DS_Store
+Thumbs.db
+Desktop.ini
