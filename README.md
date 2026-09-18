@@ -182,24 +182,6 @@ indexes/                    Generated indexes (ignored by Git)
 artifacts/                  Generated reports and previews (ignored by Git)
 ```
 
-## Publishing to a new repository
-
-Commit source code, scripts, tests, requirements, launchers, and documentation. The `models/` folder is included in the repository. `.gitignore` excludes datasets, generated indexes and reports, virtual environments, caches, and local secrets. A fresh clone must prepare the dataset and regenerate indexes and reports.
-
-When ready to publish to your own empty repository:
-
-```powershell
-git init
-git add .
-git status --short
-git diff --cached --stat
-git commit -m "Initial image similarity search project"
-git branch -M main
-git remote add origin YOUR_NEW_REPOSITORY_URL
-git push -u origin main
-```
-
-Replace the placeholder with your repository URL and review staged files before committing. Ignore rules do not remove already-tracked files; use `git rm --cached` on a file, or `git rm -r --cached` on a directory, if you need to untrack it while preserving local copies.
 
 ## Limitations and attribution
 
