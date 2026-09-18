@@ -469,14 +469,82 @@ Possible future work includes near-duplicate analysis, human relevance judgments
 
 ## 10. Syllabus alignment and viva
 
-| Syllabus area | Implemented connection |
-|---|---|
-| Unit I | Retrieval pipeline, representations, similarity |
-| Unit II | Dense vector indexing and ranked search |
-| Unit III | Explicit relevance feedback and query refinement |
-| Unit IV | Precision, recall, F1, MAP, MRR, NDCG, timing, interface |
-| Unit V | Local processing and transparent scores; crawling/PageRank are not implemented |
-| Unit VI | Multimedia retrieval and pretrained neural embeddings |
+### 10.1 Main ISR approach
+
+This project implements **content-based image retrieval using a vector-space approach**. An image is the query, image vectors are the stored representations, and cosine similarity determines the ranking. It combines a traditional color baseline with neural dense retrieval, explicit relevance feedback, and standard retrieval evaluation.
+
+The connection to the syllabus is conceptual as well as practical: it stores representations, builds an index, processes a query, ranks candidates, accepts user feedback, and measures retrieval effectiveness. It does not need to implement every syllabus topic to demonstrate a complete IR system.
+
+### 10.2 Unit-by-unit explanation
+
+| Syllabus unit | Implemented concepts | How the project demonstrates them |
+|---|---|---|
+| Unit I: Introduction to IR | IR architecture, vector representations, similarity measures, semantic similarity | Images pass through feature extraction, indexing, query processing, and ranked retrieval. CLIP captures learned visual meaning; HSV captures color distribution. |
+| Unit II: Indexing and Retrieval Models | Vector-space retrieval, dense retrieval, vector similarity search | Normalized image vectors are persisted in separate FAISS indexes and searched by inner product, which equals cosine similarity for unit vectors. |
+| Unit III: Query Processing and Intelligent Search | Explicit relevance feedback | User-selected relevant results modify the query vector and produce a new ranking without changing model weights. |
+| Unit IV: Evaluation, UX, and Human-Centered Retrieval | Precision, Recall, F1, MAP, MRR, NDCG, latency, interface design, transparency | Held-out queries evaluate both methods. Ranked cards, previews, comparisons, and feedback controls support result inspection. |
+| Unit V: Web Search, Mining, and Privacy-Aware Retrieval | Local processing and algorithmic transparency | Uploads are processed locally, and score meanings are explained. This is partial alignment with privacy-aware retrieval, not implementation of web search. |
+| Unit VI: Advanced and Emerging Retrieval Systems | Multimedia retrieval, neural representations, dense vector search, responsible AI discussion | The system retrieves images with pretrained CLIP embeddings and documents dataset, bias, and generalization limitations. |
+
+**Unit I:** The project demonstrates retrieval rather than exact data lookup. A query does not have to match an image byte-for-byte; results are ordered by degree of similarity. The representation changes from raw pixels to numerical features. This relates to the syllabus's similarity and neural-representation concepts, but the features are image embeddings, not word embeddings. Tokenization, stemming, and lemmatization are not required for the implemented image-only query path.
+
+**Unit II:** Each image acts as a retrievable item in a vector space. Unlike a term-frequency vector, its coordinates are color-bin counts or learned embedding dimensions. FAISS stores those vectors and returns the highest inner products. `IndexFlatIP` is an exhaustive exact index, not an inverted text index or an approximate nearest-neighbor index. CLIP provides neural representations, but there is no separately trained Learning-to-Rank model or BERT reranker.
+
+**Unit III:** The user supplies explicit relevance judgments by selecting result cards. The algorithm moves the original query toward the mean of selected vectors, then reruns retrieval. This is a positive-only Rocchio-style update. It is not pseudo relevance feedback, because the system does not automatically assume the top results are relevant. It is also not keyword-based query expansion.
+
+**Unit IV:** Evaluation uses 100 held-out queries and category-based relevance. Precision measures the fraction of returned results that are relevant; recall measures the fraction of all relevant gallery images returned. AP/MAP and NDCG account for result ordering, while MRR focuses on the first relevant result. The UI supports human inspection, but the project has not conducted a formal user study or collected behavioral analytics. Similarity percentages are explained as scaled cosine values rather than confidence.
+
+**Unit V:** Local image processing reduces the need to transmit user photos to a third-party model service. This supports a privacy-conscious design, but does not establish formal anonymization, differential privacy, or deployment security. The project does not crawl websites, analyze links, detect spam, or implement PageRank/HITS. Fairness risks are discussed rather than measured through a dedicated fairness experiment.
+
+**Unit VI:** Images make this a multimedia retrieval application. CLIP supplies pretrained neural features and FAISS supplies dense vector search. FAISS is a local vector-search library here, not a complete hosted vector database service. The app does not perform distributed or federated search. It returns related images without implementing collaborative filtering, a user-profile recommender, knowledge graphs, or RAG.
+
+### 10.3 Algorithms, techniques, and code mapping
+
+| Algorithm or technique | Role in the project | Implementation |
+|---|---|---|
+| Joint HSV histogram | Traditional feature extraction using 8 bins per channel, producing 512 color-count features | `histogram` in `isr/features.py` |
+| Pretrained CLIP ViT-B/32 | Neural image feature extraction producing 512-dimensional semantic embeddings | `clip_pixels` and `Encoder` in `isr/features.py` |
+| L2 normalization | Converts nonzero feature vectors to unit length before indexing and searching | `normalize` in `isr/features.py` |
+| Cosine similarity | Measures query-to-gallery vector resemblance | Normalization followed by inner-product search in `isr/retrieval.py` |
+| FAISS IndexFlatIP | Stores gallery vectors and performs exact inner-product retrieval | `build_index` and `SearchIndex` in `isr/retrieval.py` |
+| Top-K ranking | Returns the K highest-scoring gallery images in descending similarity order | `SearchIndex.search` in `isr/retrieval.py` |
+| Positive-only Rocchio-style feedback | Combines the original query with selected relevant vectors and searches again | `refine_query` in `isr/retrieval.py`; feedback route in `server.py` |
+| SHA-256 hashing | Detects exact duplicate files and checks dataset/model/index integrity | Preparation script, model downloader, dataset and retrieval modules |
+| Retrieval metrics | Computes per-query and aggregate effectiveness measures | `metrics` and `evaluate` in `isr/evaluation.py` |
+
+CLIP is the pretrained model; FAISS is the indexing/search library; cosine is the similarity measure; Top-K is the result-selection operation. These terms describe different parts of the pipeline and should not be presented as interchangeable algorithms. SHA-256 is an integrity and deduplication mechanism, not a perceptual-similarity algorithm.
+
+### 10.4 Key formulas for the syllabus discussion
+
+These plain-text equations remain readable in Markdown viewers without math support. Section 4 explains their derivation and gives worked examples.
+
+```text
+L2_norm(v) = sqrt(sum(v[j]^2 for j = 1..d))
+normalized_vector = v / L2_norm(v)
+
+cosine(q, x) = dot(q, x) / (L2_norm(q) * L2_norm(x))
+For unit vectors: cosine(q, x) = dot(q, x)
+
+results = K gallery images with the largest cosine scores
+similarity_percentage = 100 * cosine(q, x)
+
+positive_centroid = mean(selected normalized relevant vectors)
+refined_query = normalize(0.7 * original_query + 0.3 * positive_centroid)
+```
+
+The original query in the feedback equation is normalized. Selected vectors are individually normalized before averaging, and the resulting combined query is normalized again. Neither the model nor the gallery is retrained by this step.
+
+### 10.5 What is not implemented
+
+Do not claim implementation of TF-IDF, BM25, Boolean retrieval, inverted or positional text indexes, probabilistic retrieval models, language models for IR, BERT ranking, Learning to Rank, clustering, fuzzy text search, cross-language search, conversational search, or question answering.
+
+Also outside scope are web crawling, PageRank, HITS, SEO ranking, misinformation detection, formal fair-ranking methods, federated search, knowledge graphs, RAG, collaborative filtering, and persistent user-profile personalization. Approximate nearest-neighbor search is possible future work; the current FAISS index is exact. Pretrained CLIP inference is implemented, but project-specific CLIP training is not.
+
+### 10.6 Report or viva summary
+
+> Our project implements content-based image retrieval using a vector-space approach. We compare HSV color histograms with pretrained CLIP image embeddings, normalize the vectors, and perform exact cosine similarity search through FAISS. We support positive-only Rocchio-style relevance feedback and evaluate the rankings with standard IR metrics on a separate query set. The main syllabus connections are vector retrieval, indexing, query refinement, evaluation, and multimedia neural retrieval.
+
+### 10.7 Viva questions
 
 **Why not compare image bytes?** Byte equality detects exact files, while perceptual similarity must survive changes such as compression or resizing.
 
